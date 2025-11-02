@@ -1,0 +1,12 @@
+{
+  "name": "mapa-alagamentos",
+  "version": "1.0.0",
+  "description": "Protótipo de sistema colaborativo de monitoramento de alagamentos",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

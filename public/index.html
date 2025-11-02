@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Alagamentos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="notificacao" id="notificacao"></div>
+
+    <div class="header">
+        <h1>Mapa de Alagamentos na Cidade</h1>
+        <p>Sistema colaborativo para monitoramento de enchentes</p>
+    </div>
+
+    <div class="nav">
+        <button class="nav-item active" onclick="mostrarTela('mapa', event)">Mapa</button>
+        <button class="nav-item" onclick="mostrarTela('registro', event)">Registrar</button>
+        <button class="nav-item" onclick="mostrarTela('rotas', event)">Rotas</button>
+        <button class="nav-item" onclick="mostrarTela('historico', event)">Histórico</button>
+    </div>
+
+    <div class="content">
+        <!-- Tela Mapa -->
+        <div id="mapa" class="screen active">
+            <h2>Mapa em Tempo Real</h2>
+            <div class="map-container">
+                <div class="map-grid" id="mapaGrid"></div>
+            </div>
+            <div class="legenda">
+                <div class="legenda-item"><div class="cor" style="background-color:#90EE90;"></div>Normal</div>
+                <div class="legenda-item"><div class="cor" style="background-color:#FFD700;"></div>Alagamento Leve</div>
+                <div class="legenda-item"><div class="cor" style="background-color:#FFA500;"></div>Alagamento Médio</div>
+                <div class="legenda-item"><div class="cor" style="background-color:#FF4500;"></div>Alagamento Severo</div>
+                <div class="legenda-item"><div class="cor" style="background-color:#DC143C;"></div>Bloqueado</div>
+            </div>
+
+            <div class="form-group">
+                <label>Buscar localização:</label>
+                <input type="text" id="buscaLocal" placeholder="Digite o nome da rua ou bairro..." onkeyup="buscarBairro()">
+                <small id="resultadoBusca" style="color: #2c5aa0; font-weight: bold;"></small>
+            </div>
+
+            <div style="margin-top: 20px; text-align:center;">
+                <button class="btn" onclick="exportarRelatorio()" style="background-color:#28a745;">Exportar Relatório</button>
+                <button class="btn" onclick="limparDados()" style="background-color:#dc3545; margin-left:10px;">Limpar Dados</button>
+            </div>
+        </div>
+
+        <!-- Outras telas (Registro, Rotas, Histórico) -->
+        <!-- Apenas precisa manter as divs e IDs iguais ao script.js -->
+        <div id="registro" class="screen">
+            <h2>Registrar Ocorrência</h2>
+            <form id="formRegistro" onsubmit="return enviarOcorrencia(event)">
+                <div class="form-group">
+                    <label>Localização:</label>
+                    <input type="text" id="localizacao" placeholder="Rua, número, bairro..." required>
+                    <small>Localização GPS detectada automaticamente</small>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de alagamento:</label>
+                     <select id="tipoAlagamento" required>
+                            <option value="">Selecione...</option>
+                            <option value="leve">Leve - Água até o meio fio</option>
+                            <option value="medio">Médio - Água na metade da rua</option>
+                            <option value="severo">Severo - Água cobrindo a rua</option>
+                            <option value="bloqueado">Bloqueado - Intransitável</option>
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label>Descrição (opcional):</label>
+                    <textarea id="descricao" rows="4" placeholder="Detalhes sobre a situação..."></textarea>
+                </div>
+                <button type="submit" class="btn">Enviar Ocorrência</button>
+            </form>
+        </div>
+
+        <div id="rotas" class="screen">
+            <h2>Consulta de Rotas Seguras</h2>
+            <div class="form-group">
+                <label>Origem:</label>
+                <input type="text" id="origem" placeholder="Endereço de partida..." required>
+            </div>
+            <div class="form-group">
+                <label>Destino:</label>
+                <input type="text" id="destino" placeholder="Endereço de chegada..." required>
+            </div>
+            <button class="btn" onclick="calcularRota()">Calcular Rota Segura</button>
+            <div class="rota-resultado" id="rotaResultado" style="display:none;">
+                <div class="rota-info">
+                    <span>Tempo estimado: 15 min</span>
+                    <span>Distância: 8.5 km</span>
+                </div>
+                <div class="alerta">
+                    ⚠ Rota alternativa sugerida evitando áreas alagadas
+                </div>
+            </div>
+        </div>
+
+          <!-- Tela Histórico -->
+        <div id="historico" class="screen">
+            <h2>Histórico de Alagamentos</h2>
+            
+            <div class="form-group">
+                <label>Filtrar por bairro:</label>
+                <select id="filtroBairro" onchange="filtrarHistorico()">
+                    <option value="">Todos os bairros</option>
+                    <option value="centro">Centro</option>
+                    <option value="jardins">Jardins</option>
+                    <option value="vila-nova">Vila Nova</option>
+                    <option value="industrial">Industrial</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <button class="btn" onclick="exportarRelatorio()" style="background-color: #28a745;"> Exportar Relatório</button>
+            </div>
+
+            <div id="listaHistorico">
+                <!-- Histórico será carregado dinamicamente -->
+            </div>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-numero" id="totalOcorrencias">0</div>
+                    <div>Ocorrências este mês</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-numero">85%</div>
+                    <div>Taxa de resolução</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-numero">12min</div>
+                    <div>Tempo médio resposta</div>
+                </div>
+            </div>
+        </div>
+
+           
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
