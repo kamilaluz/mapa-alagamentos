@@ -1,0 +1,18 @@
+[
+  {
+    "localizacao": "Jardins",
+    "tipo": "bloqueado",
+    "descricao": "",
+    "data": "02/11/2025, 14:33:26",
+    "status": "Ativo",
+    "id": 1762104806830
+  },
+  {
+    "localizacao": "Jardins",
+    "tipo": "severo",
+    "descricao": "Tudo alagado",
+    "data": "02/11/2025, 14:33:10",
+    "status": "Ativo",
+    "id": 1762104790934
+  }
+]
